@@ -7,10 +7,12 @@ import java.util.Set;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
@@ -30,10 +32,11 @@ public class FrequentItemSetGenerator_no_hbase {
   private static final Logger logger = LogManager.getLogger(Apriori.class);
 
   /**
-   * The Mapper class to collect all the frequent itemsets from the intermediate folder
+   * The Mapper class to collect all the frequent itemsets
    */
   public static class SummaryMapper extends Mapper<LongWritable, Text, Text, Text> {
     Text record = new Text();
+    Text dummy = new Text("dummy");
 
     /**
      * Map function to read user id and business id row by row
@@ -49,7 +52,29 @@ public class FrequentItemSetGenerator_no_hbase {
       String valStr = value.toString();
       if (valStr.toString().contains("[") && !valStr.toString().contains("crc")) {
         record.set(valStr);
-        context.write(record, null);
+        context.write(dummy, record);
+      }
+    }
+  }
+
+  /**
+   * The Reducer class to output the records
+   */
+  public static class SummaryReducer extends Reducer<Text, Text, Text, DoubleWritable> {
+    /**
+     * The reduce function to output the records
+     *
+     * @param key the dummy key
+     * @param values the content of record
+     * @param context the MapReduce context
+     * @throws IOException Check Read/Write issues
+     * @throws InterruptedException Check thread issues
+     */
+    public void reduce(Text key, Iterable<Text> values,
+        Context context
+    ) throws IOException, InterruptedException {
+      for (Text val : values) {
+        context.write(val, null);
       }
     }
   }
@@ -71,7 +96,8 @@ public class FrequentItemSetGenerator_no_hbase {
       jobFinal.setJarByClass(FrequentItemSetGenerator_no_hbase.class);
       jobFinal.setOutputKeyClass(Text.class);
       jobFinal.setOutputValueClass(Text.class);
-      jobFinal.setNumReduceTasks(0);
+      jobFinal.setReducerClass(SummaryReducer.class);
+      jobFinal.setNumReduceTasks(1);
       FileOutputFormat.setOutputPath(jobFinal, new Path(args[5]));
 
       if (IS_LOCAL) {
