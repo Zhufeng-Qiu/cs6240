@@ -194,7 +194,7 @@ public class H_Apriori extends Configured implements Tool {
       Put put = new Put(WritableUtils.toByteArray(key));
       int count = 0;
       for (IntWritable val : values) {
-        count++;
+        count += val.get();
       }
       if (count >= SUPPORT) {
         put.addColumn(Bytes.toBytes("columns"), Bytes.toBytes("count"), Bytes.toBytes(count));

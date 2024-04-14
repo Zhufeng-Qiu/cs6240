@@ -4,6 +4,7 @@ import static frequent_items.H_Populate.asWritable;
 
 import frequent_items.H_Populate.TextArrayWritable;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Paths;
 import org.apache.hadoop.conf.Configuration;
@@ -21,7 +22,7 @@ import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.util.ToolRunner;
 
 /**
- * The trigger of frequent itemset algorithm
+ * The HBase-version trigger of frequent itemset algorithm
  */
 public class FrequentItemSetGenerator {
 
@@ -49,8 +50,8 @@ public class FrequentItemSetGenerator {
   public static void main(String[] args) throws Exception {
     if (args.length == 4 && isValidPath(args[3])) {
       Configuration conf = HBaseConfiguration.create();
-//    String hbaseSite = "/etc/hbaseSitese/conf/hbase-site.xml";
-//    conf.addResource(new File(hbaseSite).toURI().toURL());
+      String hbaseSite = "/etc/hbase/conf/hbase-site.xml";
+      conf.addResource(new File(hbaseSite).toURI().toURL());
       ToolRunner.run(HBaseConfiguration.create(), new H_Populate(), new String[]{ args[0], args[2] });
       int exitCode = ToolRunner.run(HBaseConfiguration.create(), new H_Apriori(), new String[]{ args[1] });
       BufferedWriter writer = new BufferedWriter(new FileWriter(args[3], false));

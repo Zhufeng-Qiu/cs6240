@@ -46,6 +46,12 @@
       <artifactId>opencsv</artifactId>
       <version>5.7.1</version>
     </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk</artifactId>
+      <version>1.11.163</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -64,10 +70,10 @@
             <configuration>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>frequent_items.H_Populate</mainClass>
+                  <mainClass>frequent_items.Populate</mainClass>
                 </transformer>
               </transformers>
-              <finalName>${project.artifactId}-HLoad</finalName>
+              <finalName>${project.artifactId}-HLoad-no-hbase</finalName>
             </configuration>
           </execution>
 
@@ -80,10 +86,26 @@
             <configuration>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>frequent_items.H_Apriori</mainClass>
+                  <mainClass>frequent_items.Apriori</mainClass>
                 </transformer>
               </transformers>
-              <finalName>${project.artifactId}-HApriori</finalName>
+              <finalName>${project.artifactId}-HApriori-no-hbase</finalName>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>Generator-no-hbase</id>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>frequent_items.FrequentItemSetGenerator_no_hbase</mainClass>
+                </transformer>
+              </transformers>
+              <finalName>${project.artifactId}-generator-no-hbase</finalName>
             </configuration>
           </execution>
 
@@ -106,5 +128,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
