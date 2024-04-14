@@ -151,12 +151,15 @@ Review.json example:
    1. build project with Maven
    2. Run the algorithm with the mapreduce program:
       ```
-      java -jar final_project-generator.jar <threshold> <support> <input> <output>
+      java -jar final_project-generator.jar <threshold> <support> <input file> <populate folder> <intermediate folder> <output folder> <flag>
       ```
          1. threshold: Only the users who make comments more than threshold are valid
          2. support: the minimum count to qualify as a frequent itemset
-         3. input: the input file with CSV format that contains the information of user id and business id
-         4. output: the output file that stores all the qualifies frequent itemsets
+         3. input file: the input file with CSV format that contains the information of user id and business id
+         4. populate folder: the folder to store the output of loading phase
+         5. intermediate folder: the folder to store the frequent itemsets for each pass
+         6. output folder: the folder to store all the qualifies frequent itemsets
+         7. flag: the flag to indicate whether the program runs locally. ```true``` if runs locally; ```false```, otherwise.
 
 ## References
 [1] Yelp Dataset (https://www.yelp.com/dataset)
